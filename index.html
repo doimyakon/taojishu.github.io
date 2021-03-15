@@ -189,7 +189,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-16 00:10:42" itemprop="dateModified" datetime="2021-03-16T00:10:42+08:00">2021-03-16</time>
+                <time title="修改时间：2021-03-16 00:21:36" itemprop="dateModified" datetime="2021-03-16T00:21:36+08:00">2021-03-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -236,80 +236,14 @@
           <h1 id="Schema与数据类型优化"><a href="#Schema与数据类型优化" class="headerlink" title="Schema与数据类型优化"></a>Schema与数据类型优化</h1><blockquote>
 <p>良好的逻辑设计和物理设计是高性能的基石，应该根据系统将要执行的查询语句来设计schema，这往往需要权衡各种因素。</p>
 </blockquote>
-<h2 id="选择优化的数据类型"><a href="#选择优化的数据类型" class="headerlink" title="选择优化的数据类型"></a>选择优化的数据类型</h2><ul>
-<li><p>更小的通常更好</p>
-<blockquote>
-<p>一般情况下，应该使用可以正确存储数据的最小数据类型（例如：只需要存储0~200，tinyint unsigned 更好），更小的数据类型通常更快，因为他们占用更少的磁盘、内存和cpu缓存，并且处理的cpu周期更少。</p>
-</blockquote>
-</li>
-<li><p>简单就好</p>
-<blockquote>
-<p>简单的数据类型的操作通常需要更少的cpu周期。例如，整型比字符操作代价更低。</p>
-<ol>
-<li>使用MySQL内建类型（date、time、datatime）而不是字符串来存储时间</li>
-<li>使用整型存储IP地址</li>
-</ol>
-</blockquote>
-</li>
-<li><p>尽量避免NULL</p>
-<blockquote>
-<p>很多表都有NULL的列，即使程序不需要，因为NULL是列的默认属性。通常指定列为NOT NULL，除非真的需要存储NULL。因为NULL会使索引、索引统计和值变得更复杂。可为NULL的列需要更多的存储空间，需要特殊处理，当索引列为NULL时，每个索引记录需要一个额外的字节。</p>
-</blockquote>
-</li>
-</ul>
-<p>下一步是选择具体类型。很多MySQL的数据类型可以存储相同类型的数据，只是存储的长度和范围不一样、允许的精度不同，或者需要的物理空间不同。</p>
-<p>例如，DATATIME和TIMESTAMP列都可以存储相同类型的数据：时间和日期，精确到秒。然而TIMESTAMP只使用DATATIME一半的存储空间，并且会根据时区变化，具有特殊的自动更新能力。另一方面，TIMESTAMP允许的时间范围要小的多，有时候它的特殊能力会成为障碍。</p>
-<h3 id="整数类型"><a href="#整数类型" class="headerlink" title="整数类型"></a>整数类型</h3><p>有两个类型的数字：整数（whole number）和实数（real number）。如果存储整数，可以使用这几种整数类型：TINYINT，SMALLINT，MEDIUMINT，INT，BIGINT。分别使用8，16，24，32，64位存储空间。</p>
-<p>整数类型有可选的 UNSIGNED属性，表示不允许负值，这大致可以使整数的上线上升一倍。</p>
-<p>MySQL可以为整数类型指定宽度，例如INT(11)，对大多数应用这是没有意义的：她并不会限制值的合法范围，只是针对一些MySQL交互工具（例如MySQL命令行客户端）用来显示字符的个数。对于存储和计算来说，INT(1)和INT(20)是相同的。</p>
-<h3 id="实数类型"><a href="#实数类型" class="headerlink" title="实数类型"></a>实数类型</h3><ul>
-<li><p>实数是带有小数部分的数字。然而，他们不只是为了存储小数部分，也可以使用BIGDECIMAL存储比BIGINT还大的整数。MySQL支持精度类型，也支持不精确类型。</p>
-</li>
-<li><p>BIGDECIMAL在4.1以及之前的版本，只是一个“存储类型”，计算时会导致精度出现丢失，在5.0以及更高的版本中，BIGDECIMAL实现了精确计算。</p>
-</li>
-<li><p>CPU本身并不支持对BIGDECIMAL的直接计算，MySQL服务器本身实现了高精度计算。相对的，CPU支持原生浮点计算，所以浮点类型运算明显更快（FLOAT、DOUBLE）。</p>
-</li>
-<li><p>FLOAT使用4字节，DOUBLE使用8字节。</p>
-</li>
-<li><p>在进行财务数据存储可以使用BIGDECIMAL，但是想要存储相当大数据时候可以使用BIGINT，对应的小数乘以位数的倍数，可以解决浮点存储计算不精确以及BIGDECIMAL高精度计算代价高的问题。</p>
-</li>
-</ul>
-<h3 id="字符串类型"><a href="#字符串类型" class="headerlink" title="字符串类型"></a>字符串类型</h3><p>从MySQL4.1开始，所有的字符串可以定义自己的字符集和排序规则，或者校对规则。这些东西很大程度影响性能。</p>
-<h4 id="VARCHAR和CHAR类型"><a href="#VARCHAR和CHAR类型" class="headerlink" title="VARCHAR和CHAR类型"></a>VARCHAR和CHAR类型</h4><blockquote>
-<p>VARCHAR和CHAR在磁盘和内存中的存储格式可能不一样，所以服务器从存储引擎读取的值可能需要转换为另一个存储格式。</p>
-</blockquote>
-<h5 id="VARCHAR"><a href="#VARCHAR" class="headerlink" title="VARCHAR"></a>VARCHAR</h5><p>VARCHAR类型用于存储可变长度的字符串，是最常见的字符串类型。它比定长类型更节省空间，因为它仅使用必要的空间（越短的字符串使用越少的空间）。如果表设置了ROW_FORMAT=FIXED的话，每一行都会使用定长存储，这会很浪费空间。</p>
-<p>VARCHAR需要1或2个额外的字节记录字符串的长度，如果列的最大长度小于或等于255字节，则使用1个字节记录长度；否则使用2个字节。</p>
-<p>VARCHAR节省了空间，对性能也有帮助。但是当我们进行更新操作时候，如果没有足够长的空间，不同的存储引擎则会进行不同的处理方式。MyISAM会将行拆成不同的片段存储，InnoDB则需要分裂页来使行可以放进页内。</p>
-<p>适合VARCHAR的场景：1、字符串列的最大长度比平均长度大很多；2、列的更新很少，所以碎片不是问题；3、使用像UTF-8这样复杂的字符集，每个字符都使用不同的字节数进行存储。</p>
-<h5 id="CHAR"><a href="#CHAR" class="headerlink" title="CHAR"></a>CHAR</h5><p>char类型是定长的：MySQL总会分配足够长度的空间，会根据需要采用控股进行填充以方便比较。CHAR适合存储很短的字符串，或者类似MD5这种密码，因为这是一个定长的值。相对于短的列，CHAR比VARCHAR更有效率，也不会产生碎片。会自动剔除末尾空格。</p>
-<h4 id="BLOB和TEXT类型"><a href="#BLOB和TEXT类型" class="headerlink" title="BLOB和TEXT类型"></a>BLOB和TEXT类型</h4><blockquote>
-<p>BLOB和TEXT都是为了存储很大的数据而设计的字符串数据类型，分别采用二进制和字符存储。</p>
-</blockquote>
-<ul>
-<li>字符类型：TINYTEXT、SMALLTEXT、TEXT、MEDIUMTEXT、LONGTEXT</li>
-<li>二进制类型：TINYBLOB、SMALLBLOB、BLOB、MEDIUMBLOB、LONGBLOB</li>
-</ul>
-<p>InnoDB会使用专门的”外部“存储区域来进行存储，每个值在行内需要1-4个字节存储一个指针，然后在外部存储区域存储实际的值。BLOB没有排序规则和字符集，而TEXT有字符集和排序规则。</p>
-<h4 id="使用枚举（ENUM）代替字符串类型"><a href="#使用枚举（ENUM）代替字符串类型" class="headerlink" title="使用枚举（ENUM）代替字符串类型"></a>使用枚举（ENUM）代替字符串类型</h4><p>有时候可以使用枚举代替字符串，MySQL在存储枚举时非常紧凑，会根据列表值的数量压缩到一个或者两个字节中。MySQL在内部将每个值在列表的位置保存为整数，并且在表的.frm文件中保存”数字-字符串“映射关系的”查找表“。</p>
-<p>定义时，尽量按照枚举的排序定义，因为默认是按照内部存入的数字排序的。</p>
-<p>枚举最不好的就是改变值的时候必须使用ALTER，对于未来不定的字段，枚举不是一个好主意。</p>
-<h4 id="日期和时间类型"><a href="#日期和时间类型" class="headerlink" title="日期和时间类型"></a>日期和时间类型</h4><h5 id="DATETIME"><a href="#DATETIME" class="headerlink" title="DATETIME"></a>DATETIME</h5><p>这个类型可以存储大范围的值，从1001年到9999年，精度为秒。它把日期和时间封装到一个YYYYMMDDHHMMSS的整数中，与时区无关。使用8个字节的存储空间。</p>
-<p>默认情况下，MySQL以一种可排序的、无歧义的格式显示DATETIME值，例如”2021-03-15 23:00:00“。</p>
-<h5 id="TIMESTAMP"><a href="#TIMESTAMP" class="headerlink" title="TIMESTAMP"></a>TIMESTAMP</h5><p>保存了1970年1月1日午夜以来的秒数，它和UNIX时间戳时间相同。TIMESTAMP只使用4字节存储空间，因为范围比DATETIME小很多。只能表示1970-2038。</p>
-<h4 id="位数据类型"><a href="#位数据类型" class="headerlink" title="位数据类型"></a>位数据类型</h4><h5 id="BIT"><a href="#BIT" class="headerlink" title="BIT"></a>BIT</h5><blockquote>
-<p>可以使用BIT存储一个或多个true/false的值。BIT(1)定义一个包含单个位的字段，BIT(2)存储2个位，以此类推，BIT最大长度为64个位。</p>
-</blockquote>
-<h4 id="选择标识符（identifier）"><a href="#选择标识符（identifier）" class="headerlink" title="选择标识符（identifier）"></a>选择标识符（identifier）</h4><p>一旦使用一种类型，要确保所有关联表中都使用相同的类型，类型之间需要精确匹配，包含向UNSIGNED这样的属性。</p>
-<ul>
-<li>整数类型：整数通常是标识列最好的选择，因为它很快并且自增</li>
-<li>ENUM和SET类型：糟糕的选择，枚举的扩展需要ALTER</li>
-<li>字符串类型：很消耗空间，通常比数字类型更慢。</li>
-</ul>
-<h4 id="特殊类型数据"><a href="#特殊类型数据" class="headerlink" title="特殊类型数据"></a>特殊类型数据</h4><ul>
-<li>IP地址：大部分人使用VARCHAR(15)存储，但其实它是32位无符号整数，不是字符串。MySQL提供INET_ATON()和ONET_NTOA()进行转换</li>
-</ul>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/15/MySQL-03%E9%87%8D%E6%96%B0%E8%AE%A4%E8%AF%86MySQL%E4%B9%8BSchema%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E4%BC%98%E5%8C%96/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -359,7 +293,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-16 00:08:10" itemprop="dateModified" datetime="2021-03-16T00:08:10+08:00">2021-03-16</time>
+                <time title="修改时间：2021-03-16 00:21:40" itemprop="dateModified" datetime="2021-03-16T00:21:40+08:00">2021-03-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -407,69 +341,14 @@
 <p>​        首先，它为应用团队提供了一种能力，可以快速地对在环境中运行的服务实例数量进行水平伸缩。通过服务发现，服务消费者能够将服务物理位置抽象出来。由于服务消费者不知道服务实例的物理位置，因为可以从可用服务池中添加或移除服务实例。它驱使习惯于构建单一整体、单一租户的应用程序的开发团队，远离仅考虑通过增加更大型、更好的硬件（垂直伸缩）的方法来扩大服务，而是通过更强大的方法（添加更多服务器来实现扩大）</p>
 <p>​        其次，它有助于提高应用程序的弹性。当微服务实例变得不健康或不可用时，大多数服务发现引擎将从内部可用服务列表中移除该实例，由于服务发现引擎会在路由服务时绕过不可用服务，因此能够时不可用服务造成的损害最小</p>
 </blockquote>
-<h2 id="使用DNS和负载均衡器的传统服务位置解析模型"><a href="#使用DNS和负载均衡器的传统服务位置解析模型" class="headerlink" title="使用DNS和负载均衡器的传统服务位置解析模型"></a>使用DNS和负载均衡器的传统服务位置解析模型</h2><h3 id="画图说明"><a href="#画图说明" class="headerlink" title="画图说明"></a>画图说明</h3><p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210131222906265.png" alt="image-20210131222906265"></p>
-<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
-<li><p>单点故障</p>
-<blockquote>
-<p>虽然负载均衡器可以实现高可用，但这是整个基础设施的单点故障。如果负载均衡器出现故障，那么依赖它的每个用用程序都会出现故障。尽管可以使负载平衡器高度可用，但负载均衡器往往时应用程序基础设施中的集中式阻塞点</p>
-</blockquote>
-</li>
-<li><p>有限的水平可伸缩性</p>
-<blockquote>
-<ol>
-<li>大多数商业负载均衡器使用热插拔模式实现冗余，因此只能使用单个服务器来处理负载，而辅助负载均衡器仅在主负载均衡器中断的情况下，才能进行故障切换</li>
-<li>商业负载均衡器具有有限数量的许可证，它面向固定容量模型而不是更可变的模型</li>
-</ol>
-</blockquote>
-</li>
-<li><p>静态管理</p>
-<blockquote>
-<p>大多数传统的负载均衡器不是为快速注册和注销服务设计的。他们使用集中式数据库来存储规则的路由，添加新路由的唯一方法通常时通过供应商的专有API来进行添加</p>
-</blockquote>
-</li>
-<li><p>复杂</p>
-<blockquote>
-<p>由于负载均衡器充当服务的代理，他必须将服务消费者的请求映射到物理服务。这个翻译层通常会为服务基础设施增加一层复杂度，因为开发人员必须手动定义和部署服务的映射规则。在传统的负载均衡方案中，新服务实例的注册时手动完成的，而不是在新服务实例启动时完成的</p>
-</blockquote>
-</li>
-</ul>
-<h2 id="云中的服务发现"><a href="#云中的服务发现" class="headerlink" title="云中的服务发现"></a>云中的服务发现</h2><p>基于云的微服务环境的解决方案时使用服务发现机制，这一机制具有如下特点</p>
-<ul>
-<li><p>高可用</p>
-<blockquote>
-<p>服务发现需要能够支持“热”集群环境，在服务发现集群中可以跨多个节点共享服务查找。如果一个节点变得不可用，集群中的其他节点能够接管工作</p>
-</blockquote>
-</li>
-<li><p>点对点</p>
-<blockquote>
-<p>服务发现集群中的每个节点共享服务实例的状态</p>
-</blockquote>
-</li>
-<li><p>负载均衡</p>
-<blockquote>
-<p>服务发现需要动态在所有服务实例之间对请求进行负载均衡，以确保服务调用分布在由它管理的所有服务实力上。替代了传统的更静态的、传统的手动管理的负载均衡器</p>
-</blockquote>
-</li>
-<li><p>有弹性</p>
-<blockquote>
-<p>服务发现的客户端在本地“缓存”服务信息。本地缓存允许发现逐步降级，这样，如果服务不可用，程序仍然可以基于本地缓存的维护信息来运行和定位服务</p>
-</blockquote>
-</li>
-<li><p>容错</p>
-<blockquote>
-<p>服务发现需要检测出服务实例什么时候时不健康的，并可以从接收客户端请求的可用服务列表中移除该实例</p>
-</blockquote>
-</li>
-</ul>
-<h2 id="服务发现架构"><a href="#服务发现架构" class="headerlink" title="服务发现架构"></a>服务发现架构</h2><h3 id="四个概念"><a href="#四个概念" class="headerlink" title="四个概念"></a>四个概念</h3><ul>
-<li>服务注册 - 服务如何使用服务发现代理进行注册？</li>
-<li>服务地址的客户端查找 - 服务客户端查找服务信息的方法是什么？</li>
-<li>信息共享 - 如何跨节点共享服务信息？</li>
-<li>健康检测 - 服务如何将它的健康信息传回给服务发现代理？</li>
-</ul>
-<h3 id="注册服务"><a href="#注册服务" class="headerlink" title="注册服务"></a>注册服务</h3><p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210131232651503.png" alt="image-20210131232651503"></p>
-<h3 id="查找服务"><a href="#查找服务" class="headerlink" title="查找服务"></a>查找服务</h3><p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210131233742325.png" alt="image-20210131233742325"></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/31/SpringCloud-01SpringCloud%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%8E%E5%8F%91%E7%8E%B0%E4%B9%8B%E7%90%86%E8%AE%BA%E7%AF%87/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -519,7 +398,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-16 00:07:49" itemprop="dateModified" datetime="2021-03-16T00:07:49+08:00">2021-03-16</time>
+                <time title="修改时间：2021-03-16 00:21:30" itemprop="dateModified" datetime="2021-03-16T00:21:30+08:00">2021-03-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -569,7 +448,14 @@
 <h1 id="hexo-theme-next"><a href="#hexo-theme-next" class="headerlink" title="hexo-theme-next"></a>hexo-theme-next</h1><blockquote>
 <p>官方文档：<a target="_blank" rel="noopener" href="https://theme-next.iissnan.com/">https://theme-next.iissnan.com/</a></p>
 </blockquote>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/28/Hexo-01%E5%A6%82%E4%BD%95%E4%BF%AE%E6%94%B9Hexo%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -619,7 +505,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-03-16 00:07:46" itemprop="dateModified" datetime="2021-03-16T00:07:46+08:00">2021-03-16</time>
+                <time title="修改时间：2021-03-16 00:21:32" itemprop="dateModified" datetime="2021-03-16T00:21:32+08:00">2021-03-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -666,82 +552,14 @@
           <h2 id="插件安装"><a href="#插件安装" class="headerlink" title="插件安装"></a>插件安装</h2><h3 id="Node-js安装"><a href="#Node-js安装" class="headerlink" title="Node.js安装"></a>Node.js安装</h3><h4 id="插件说明"><a href="#插件说明" class="headerlink" title="插件说明"></a>插件说明</h4><blockquote>
 <p>简单的说Node.js 就是运行在服务端的 JavaScript。<br>Node.js是一个基于Chrome JavaScript 运行时建立的一个平台。<br>Node.js是一个事件驱动I/O服务端JavaScript环境，基于Google的V8引擎，V8引擎执行Javascript的速度非常快，性能非常好。</p>
 </blockquote>
-<h4 id="下载地址"><a href="#下载地址" class="headerlink" title="下载地址"></a>下载地址</h4><ul>
-<li>中文官网：<a target="_blank" rel="noopener" href="https://nodejs.org/zh-cn/">https://nodejs.org/zh-cn/</a></li>
-</ul>
-<h4 id="安装说明"><a href="#安装说明" class="headerlink" title="安装说明"></a>安装说明</h4><p>双击打开，按照默认配置安装即可，使用下面的指令查看是否安装成功</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br></pre></td></tr></table></figure>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123230233869.png" alt="image-20210123230233869"></p>
-<ul>
-<li><p>本人不喜欢使用npm或者有小伙伴使用npm失败可以使用安装yarn替代npm</p>
-<blockquote>
-<p>Yarn 的安装方法也在 <a target="_blank" rel="noopener" href="https://classic.yarnpkg.com/en/docs/install">官网</a> 有，请根据系统选择安装方法。需要注意的是， 要记得按照官网说明配置好环境变量，另外不要安装 Yarn 2，因为目前还存在一定的问题，不建议现在就使用。Yarn 的使用同 npm 有一定微小的区别，因此我在下文的安装配置中，会将两种包管理器的使用都写出来。</p>
-</blockquote>
-</li>
-</ul>
-<h3 id="Hexo安装"><a href="#Hexo安装" class="headerlink" title="Hexo安装"></a>Hexo安装</h3><h4 id="插件说明-1"><a href="#插件说明-1" class="headerlink" title="插件说明"></a>插件说明</h4><blockquote>
-<p>Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。</p>
-</blockquote>
-<h4 id="安装说明-1"><a href="#安装说明-1" class="headerlink" title="安装说明"></a>安装说明</h4><ul>
-<li>安装指令</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add hexo-cli -g</span><br></pre></td></tr></table></figure>
-<ul>
-<li>查看安装结果</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123230328785.png" alt="image-20210123230328785"></p>
-<h3 id="Git安装"><a href="#Git安装" class="headerlink" title="Git安装"></a>Git安装</h3><h4 id="下载地址-1"><a href="#下载地址-1" class="headerlink" title="下载地址"></a>下载地址</h4><ul>
-<li>中文官网：<a target="_blank" rel="noopener" href="https://git-scm.com/downloads">https://git-scm.com/downloads</a></li>
-</ul>
-<h4 id="安装说明-2"><a href="#安装说明-2" class="headerlink" title="安装说明"></a>安装说明</h4><p>双击打开，按照默认配置安装即可，使用下面的指令查看是否安装成功</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git version</span><br></pre></td></tr></table></figure>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123230400982.png" alt="image-20210123230400982"></p>
-<h2 id="Git配置"><a href="#Git配置" class="headerlink" title="Git配置"></a>Git配置</h2><h3 id="create-repository"><a href="#create-repository" class="headerlink" title="create repository"></a>create repository</h3><ul>
-<li>名称格式：xxx.github.io</li>
-</ul>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123230615544.png" alt="image-20210123230615544"></p>
-<h3 id="查看本地rsa"><a href="#查看本地rsa" class="headerlink" title="查看本地rsa"></a>查看本地rsa</h3><h4 id="mac"><a href="#mac" class="headerlink" title="mac"></a>mac</h4><ul>
-<li>位置：~/.ssh</li>
-</ul>
-<h4 id="windows"><a href="#windows" class="headerlink" title="windows"></a>windows</h4><ul>
-<li>安装</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add /c/Users/chenjs/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123232459638.png" alt="image-20210123232459638"></p>
-<h3 id="添加rsa到github"><a href="#添加rsa到github" class="headerlink" title="添加rsa到github"></a>添加rsa到github</h3><ul>
-<li>位置：settings -&gt; SSH and GPGkeys -&gt; New SSH Key<br><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/md03.png" alt="respository"></li>
-</ul>
-<h3 id="Hexo初始化并配置"><a href="#Hexo初始化并配置" class="headerlink" title="Hexo初始化并配置"></a>Hexo初始化并配置</h3><h4 id="Hexo初始化"><a href="#Hexo初始化" class="headerlink" title="Hexo初始化"></a>Hexo初始化</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init blog</span><br></pre></td></tr></table></figure>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123231015511.png" alt="image-20210123231015511"></p>
-<ul>
-<li>找到<code>_config.yml</code>，修改如下配置</li>
-</ul>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">    <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">    <span class="attr">repo:</span> <span class="string">这里填入你之前在GitHub上创建仓库的完整路径，记得加上</span> <span class="string">.git</span></span><br><span class="line">    <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123231520561.png" alt="image-20210123231520561"></p>
-<ul>
-<li><p>URL 下的 url（在文件开头处），将其修改为</p>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123232928031.png" alt="image-20210123232928031"></p>
-</li>
-</ul>
-<h2 id="hello-md"><a href="#hello-md" class="headerlink" title="hello.md"></a>hello.md</h2><h3 id="新建文章"><a href="#新建文章" class="headerlink" title="新建文章"></a>新建文章</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new Hello</span><br></pre></td></tr></table></figure>
-<h3 id="本地启动查看"><a href="#本地启动查看" class="headerlink" title="本地启动查看"></a>本地启动查看</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123231705280.png" alt="image-20210123231705280"></p>
-<blockquote>
-<p>通过localhost:4000 即可预览</p>
-</blockquote>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123231809592.png" alt="image-20210123231809592"></p>
-<h3 id="发布文章"><a href="#发布文章" class="headerlink" title="发布文章"></a>发布文章</h3><ul>
-<li><p>hexo-deployer-git安装</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add hexo-deployer-git</span><br></pre></td></tr></table></figure>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123233428638.png" alt="image-20210123233428638"></p>
-</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean //清除缓存文件 db.json 和已生成的静态文件 public</span><br><span class="line">hexo generate //生成网站静态文件到默认设置的 public 文件夹</span><br><span class="line">hexo deploy //自动生成网站静态文件，并部署到设定的仓库</span><br></pre></td></tr></table></figure>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123233626622.png" alt="image-20210123233626622"></p>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210123233655561.png" alt="image-20210123233655561"></p>
-<h3 id="查看是否发布成功"><a href="#查看是否发布成功" class="headerlink" title="查看是否发布成功"></a>查看是否发布成功</h3><p><a href="http://taojishu.github.io/">http://taojishu.github.io/</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/28/Hexo-02%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Hexo%E5%92%8CGitHub%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
