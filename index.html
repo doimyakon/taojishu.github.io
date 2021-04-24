@@ -181,10 +181,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-04-06 22:34:03 / 修改时间：22:45:29" itemprop="dateCreated datePublished" datetime="2021-04-06T22:34:03+08:00">2021-04-06</time>
+              <time title="创建时间：2021-04-06 22:34:03" itemprop="dateCreated datePublished" datetime="2021-04-06T22:34:03+08:00">2021-04-06</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-24 12:26:39" itemprop="dateModified" datetime="2021-04-24T12:26:39+08:00">2021-04-24</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -240,6 +246,186 @@
             </div>
           <!--/noindex-->
         
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://taojishu.github.io/2021/04/06/%E3%80%90Redis%E3%80%91%E2%91%A0centos8%E4%B8%8B%E5%AE%89%E8%A3%85redis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://taojishu.oss-cn-beijing.aliyuncs.com/md/%E5%A4%B4%E5%83%8F.png">
+      <meta itemprop="name" content="doimyakon">
+      <meta itemprop="description" content="愿我的余生与代码相伴！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TaoJiShu">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/04/06/%E3%80%90Redis%E3%80%91%E2%91%A0centos8%E4%B8%8B%E5%AE%89%E8%A3%85redis/" class="post-title-link" itemprop="url">【Redis】①centos8下安装Redis</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-06 22:34:03" itemprop="dateCreated datePublished" datetime="2021-04-06T22:34:03+08:00">2021-04-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-24 12:28:24" itemprop="dateModified" datetime="2021-04-24T12:28:24+08:00">2021-04-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index"><span itemprop="name">Redis</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/04/06/%E3%80%90Redis%E3%80%91%E2%91%A0centos8%E4%B8%8B%E5%AE%89%E8%A3%85redis/" class="post-meta-item leancloud_visitors" data-flag-title="【Redis】①centos8下安装Redis" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/04/06/%E3%80%90Redis%E3%80%91%E2%91%A0centos8%E4%B8%8B%E5%AE%89%E8%A3%85redis/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/04/06/%E3%80%90Redis%E3%80%91%E2%91%A0centos8%E4%B8%8B%E5%AE%89%E8%A3%85redis/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="redis安装"><a href="#redis安装" class="headerlink" title="redis安装"></a>redis安装</h1><blockquote>
+<p>环境：centos 8.0<br>redis 6.2.2</p>
+</blockquote>
+<h2 id="gcc-安装"><a href="#gcc-安装" class="headerlink" title="gcc 安装"></a>gcc 安装</h2><blockquote>
+<p>gcc 是编译c语言程序的工具</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc-c++</span><br></pre></td></tr></table></figure>
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210422232239666.png" alt="image-20210422232239666"></p>
+<h2 id="下载redis"><a href="#下载redis" class="headerlink" title="下载redis"></a>下载redis</h2><blockquote>
+<p>官网： <a target="_blank" rel="noopener" href="https://download.redis.io/releases/redis-6.2.2.tar.gz?_ga=2.112824269.812036617.1619103639-75233850.1619103639">https://download.redis.io/releases/redis-6.2.2.tar.gz?_ga=2.112824269.812036617.1619103639-75233850.1619103639</a></p>
+<p>云盘：链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1o1nEcButkIGU-IHbES73WA">https://pan.baidu.com/s/1o1nEcButkIGU-IHbES73WA</a> 提取码：pvki </p>
+</blockquote>
+<h2 id="安装redis"><a href="#安装redis" class="headerlink" title="安装redis"></a>安装redis</h2><ul>
+<li>将redis压缩包上传到/usr/local/redis目录下</li>
+</ul>
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210422231353306.png" alt="image-20210422231353306"></p>
+<ul>
+<li>解压redis包</li>
+</ul>
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210422231652859.png" alt="image-20210422231652859"></p>
+<ul>
+<li>进入解压后的目录 ，执行make（没有安装gcc此处就会有报错信息）</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make PREFIX=/user/local/redix install</span><br></pre></td></tr></table></figure>
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210422231846118.png" alt="image-20210422231846118"></p>
+<ul>
+<li>如果出现如下提示，需要清理下上次编译残留文件</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make distclean &amp;&amp; make PREFIX=/user/local/redix install</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/md1227086-20181008103523069-1982630406.png" alt="image"></p>
+<ul>
+<li>进入root，进入redis压缩文件，将conf文件放到刚刚安装的路径</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp redis.conf /user/local/redix</span><br></pre></td></tr></table></figure>
+<ul>
+<li>进入src目录，启动redis-server</li>
+</ul>
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210422234913076.png" alt="image-20210422234913076"></p>
+<ul>
+<li>调整为守护线程启动</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim redis.conf</span><br></pre></td></tr></table></figure>
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210422235141087.png" alt="image-20210422235141087"></p>
+<ul>
+<li>指定配置启动</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./redis-server ../redis.conf</span><br></pre></td></tr></table></figure>
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdimage-20210422235310745.png" alt="image-20210422235310745"></p>
+<ul>
+<li>关闭指令</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/redis-cli shutdown</span><br></pre></td></tr></table></figure>
+<h2 id="开机启动"><a href="#开机启动" class="headerlink" title="开机启动"></a>开机启动</h2><ul>
+<li>复制启动文件到etc下面redis启动文件</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /usr/local/redis/redis-6.2.2/utils/redis_init_script /etc/init.d/redis</span><br></pre></td></tr></table></figure>
+<ul>
+<li>修改脚本</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="bash"><span class="comment"># Simple Redis init.d script conceived to work on Linux systems</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> as it does use of the /proc filesystem.</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">## BEGIN INIT INFO</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Provides:     redis_6379</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Default-Start:        2 3 4 5</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Default-Stop:         0 1 6</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Short-Description:    Redis data structure server</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Description:          Redis data structure server. See https://redis.io</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">## END INIT INFO</span></span></span><br><span class="line"></span><br><span class="line">REDISPORT=6379</span><br><span class="line">EXEC=/usr/local/redis/redis-6.2.2/src/redis-server</span><br><span class="line">CLIEXEC=/usr/local/redis/redis-6.2.2/src/redis-cli</span><br><span class="line"></span><br><span class="line">PIDFILE=/var/run/redis_$&#123;REDISPORT&#125;.pid</span><br><span class="line">CONF=&quot;/usr/local/redis/redis-6.2.2/redis.conf&quot;</span><br><span class="line"></span><br><span class="line">case &quot;$1&quot; in</span><br><span class="line">    start)</span><br><span class="line">        if [ -f $PIDFILE ]</span><br><span class="line">        then</span><br><span class="line">                echo &quot;$PIDFILE exists, process is already running or crashed&quot;</span><br><span class="line">        else</span><br><span class="line">                echo &quot;Starting Redis server...&quot;</span><br><span class="line">                $EXEC $CONF</span><br><span class="line">        fi</span><br><span class="line">        ;;</span><br><span class="line">    stop)</span><br><span class="line">        if [ ! -f $PIDFILE ]</span><br><span class="line">        then</span><br><span class="line">                echo &quot;$PIDFILE does not exist, process is not running&quot;</span><br><span class="line">        else</span><br><span class="line">                PID=$(cat $PIDFILE)</span><br><span class="line">                echo &quot;Stopping ...&quot;</span><br><span class="line">                $CLIEXEC -p $REDISPORT shutdown</span><br><span class="line">                while [ -x /proc/$&#123;PID&#125; ]</span><br><span class="line">                do</span><br><span class="line">                    echo &quot;Waiting for Redis to shutdown ...&quot;</span><br><span class="line">                    sleep 1</span><br><span class="line">                done</span><br><span class="line">                echo &quot;Redis stopped&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ul>
+<li>添加redis服务</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chkconfig --add redis</span><br></pre></td></tr></table></figure>
+<ul>
+<li>配置开机启动</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chkconfig redis on</span><br></pre></td></tr></table></figure>
+<ul>
+<li>打开redis命令</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service redis start</span><br></pre></td></tr></table></figure>
+<ul>
+<li>查看是否启动成功</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep redis</span><br></pre></td></tr></table></figure>
+<ul>
+<li>关闭redis命令</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service redis stop</span><br></pre></td></tr></table></figure>
+<ul>
+<li>重启</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reboot</span><br></pre></td></tr></table></figure>
+
       
     </div>
 
@@ -739,20 +925,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
