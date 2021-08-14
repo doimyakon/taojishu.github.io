@@ -158,175 +158,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://taojishu.github.io/2021/08/14/%E3%80%90Sentinel%E3%80%91Sentinel-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://taojishu.oss-cn-beijing.aliyuncs.com/md/%E5%A4%B4%E5%83%8F.png">
-      <meta itemprop="name" content="doimyakon">
-      <meta itemprop="description" content="愿我的余生与代码相伴！">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="TaoJiShu">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/14/%E3%80%90Sentinel%E3%80%91Sentinel-01/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-08-14 20:54:01 / 修改时间：23:35:13" itemprop="dateCreated datePublished" datetime="2021-08-14T20:54:01+08:00">2021-08-14</time>
-            </span>
-
-          
-            <span id="/2021/08/14/%E3%80%90Sentinel%E3%80%91Sentinel-01/" class="post-meta-item leancloud_visitors" data-flag-title="" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/08/14/%E3%80%90Sentinel%E3%80%91Sentinel-01/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/14/%E3%80%90Sentinel%E3%80%91Sentinel-01/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><blockquote>
-<p>Sentinel 是面向分布式服务架构的流量控制组件，主要以流量为切入点，从流量控制、熔断降级、系统自适应保护等多个维度来帮助您保障微服务的稳定性。</p>
-</blockquote>
-<h2 id="Sentinel-的历史"><a href="#Sentinel-的历史" class="headerlink" title="Sentinel 的历史"></a>Sentinel 的历史</h2><ul>
-<li>2012 年，Sentinel 诞生，主要功能为入口流量控制。</li>
-<li>2013-2017 年，Sentinel积累了大量的流量归整场景以及生产实践。</li>
-<li>2018 年，Sentinel 开源，并持续演进。</li>
-<li>2019 年，Sentinel 朝着多语言扩展的方向不断探索，推出 <a target="_blank" rel="noopener" href="https://github.com/alibaba/sentinel-cpp">C++ 原生版本</a>，同时针对 Service Mesh 场景也推出了 <a target="_blank" rel="noopener" href="https://github.com/alibaba/Sentinel/tree/master/sentinel-cluster/sentinel-cluster-server-envoy-rls">Envoy 集群流量控制支持</a>，以解决 Service Mesh 架构下多语言限流的问题。</li>
-<li>2020 年，推出 <a target="_blank" rel="noopener" href="https://github.com/alibaba/sentinel-golang">Sentinel Go 版本</a>，继续朝着云原生方向演进。</li>
-</ul>
-<h2 id="Sentinel基础概念"><a href="#Sentinel基础概念" class="headerlink" title="Sentinel基础概念"></a>Sentinel基础概念</h2><h3 id="资源"><a href="#资源" class="headerlink" title="资源"></a>资源</h3><p>应用服务的提供者或者消费者，甚至可以是一块代码块。</p>
-<p>通过Sentinel API定义的代码，就是资源，可以使用方法签名，URL，甚至服务名称作为资源名来标示资源。</p>
-<h3 id="规则"><a href="#规则" class="headerlink" title="规则"></a>规则</h3><p>围绕着资源，设置针对流量控制、熔断降级规则，可以实现动态更新规则。（动态实现模式：原始模式、PULL模式、PUSH模式）</p>
-<h2 id="Sentinel-功能和设计理念"><a href="#Sentinel-功能和设计理念" class="headerlink" title="Sentinel 功能和设计理念"></a>Sentinel 功能和设计理念</h2><h3 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h3><p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdsentinel-flow-overview.jpg" alt="sentinel-flow-overview"></p>
-<p>流量即网络访问中的请求，通过流量控制，可以实现对资源的控制，保护资源的可用性。</p>
-<p>一般通过以下角度：</p>
-<ul>
-<li>资源的调用关系，例如资源的调用链路，资源和资源之间的关系；</li>
-<li>运行指标，例如 QPS、线程池、系统负载等；</li>
-<li>控制的效果，例如直接限流、冷启动、排队等。</li>
-</ul>
-<h3 id="熔断降级"><a href="#熔断降级" class="headerlink" title="熔断降级"></a>熔断降级</h3><p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/md62410811-cd871680-b61d-11e9-9df7-3ee41c618644.png" alt="image"></p>
-<p>熔断降级即降低不稳定资源调用，保护资源的可用性，避免影响其他资源，防止产生雪崩的情况。</p>
-<blockquote>
-<p>Hytrix区别：</p>
-<ul>
-<li>Hytrix通过线程池来对资源进行隔离。增加线程切换成本（上下文），还需要预先分配线程池大小。</li>
-<li>Sentine通过两点针对<ul>
-<li>通过并发线程数进行限制</li>
-<li>通过响应时间对资源进行降级</li>
-</ul>
-</li>
-</ul>
-</blockquote>
-<h3 id="系统负载保护"><a href="#系统负载保护" class="headerlink" title="系统负载保护"></a>系统负载保护</h3><p>如果一个集群环境下的两台机器，本应将请求打到第一台机器时候，由于机器的使用情况，网络负载将请求打到第二台机器，可是如果第二台机器也到了临界值，此时很容易产生系统崩溃。</p>
-<p>为了解决这个问题，Sentinel 提供了对应的保护机制，让系统的入口流量和系统的负载达到一个平衡，保证系统在能力范围之内处理最多的请求。</p>
-<h2 id="Sentinel-是如何工作的"><a href="#Sentinel-是如何工作的" class="headerlink" title="Sentinel 是如何工作的"></a>Sentinel 是如何工作的</h2><p>Sentinel 的主要工作机制如下：</p>
-<ul>
-<li>对主流框架提供适配或者显示的 API，来定义需要保护的资源，并提供设施对资源进行实时统计和调用链路分析。</li>
-<li>根据预设的规则，结合对资源的实时统计信息，对流量进行控制。同时，Sentinel 提供开放的接口，方便您定义及改变规则。</li>
-<li>Sentinel 提供实时的监控系统，方便您快速了解目前系统的状态。</li>
-</ul>
-<h1 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><h3 id="资源-1"><a href="#资源-1" class="headerlink" title="资源"></a>资源</h3><ul>
-<li>资源名称</li>
-<li>entry</li>
-</ul>
-<h3 id="entry"><a href="#entry" class="headerlink" title="entry"></a>entry</h3><ul>
-<li><code>NodeSelectorSlot</code> 负责收集资源的路径，并将这些资源的调用路径，以树状结构存储起来，用于根据调用路径来限流降级；</li>
-<li><code>ClusterBuilderSlot</code> 则用于存储资源的统计信息以及调用者信息，例如该资源的 RT, QPS, thread count 等等，这些信息将用作为多维度限流，降级的依据；</li>
-<li><code>StatisticSlot</code> 则用于记录、统计不同纬度的 runtime 指标监控信息；</li>
-<li><code>FlowSlot</code> 则用于根据预设的限流规则以及前面 slot 统计的状态，来进行流量控制；</li>
-<li><code>AuthoritySlot</code> 则根据配置的黑白名单和调用来源信息，来做黑白名单控制；</li>
-<li><code>DegradeSlot</code> 则通过统计信息以及预设的规则，来做熔断降级；</li>
-<li><code>SystemSlot</code> 则通过系统的状态，例如 load1 等，来控制总的入口流量；</li>
-</ul>
-<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdsentinel-slot-chain-architecture.png" alt="sentinel-slot-chain-architecture"></p>
-<p>Sentinel 将 <code>ProcessorSlot</code> 作为 SPI 接口进行扩展（1.7.2 版本以前 <code>SlotChainBuilder</code> 作为 SPI），使得 Slot Chain 具备了扩展的能力。您可以自行加入自定义的 slot 并编排 slot 间的顺序，从而可以给 Sentinel 添加自定义的功能。</p>
-<p><img src="https://user-images.githubusercontent.com/9434884/46783631-93324d00-cd5d-11e8-8ad1-a802bcc8f9c9.png" alt="Slot Chain SPI"></p>
-<p>下面介绍一下各个 slot 的功能。</p>
-<h2 id="NodeSelectorSlot"><a href="#NodeSelectorSlot" class="headerlink" title="NodeSelectorSlot"></a>NodeSelectorSlot</h2><p>这个 slot 主要负责收集资源的路径，并将这些资源的调用路径，以树状结构存储起来，用于根据调用路径来限流降级。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ContextUtil.enter(<span class="string">&quot;entrance1&quot;</span>, <span class="string">&quot;appA&quot;</span>);</span><br><span class="line">Entry nodeA = SphU.entry(<span class="string">&quot;nodeA&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (nodeA != <span class="keyword">null</span>) &#123;</span><br><span class="line">   nodeA.exit();</span><br><span class="line">&#125;</span><br><span class="line">ContextUtil.exit();</span><br></pre></td></tr></table></figure>
-<p>上述代码通过 <code>ContextUtil.enter()</code> 创建了一个名为 <code>entrance1</code> 的上下文，同时指定调用发起者为 <code>appA</code>；接着通过 <code>SphU.entry()</code>请求一个 token，如果该方法顺利执行没有抛 <code>BlockException</code>，表明 token 请求成功。</p>
-<p>以上代码将在内存中生成以下结构：</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> machine-root</span><br><span class="line">           /     </span><br><span class="line">          /</span><br><span class="line">   EntranceNode1</span><br><span class="line">        /</span><br><span class="line">       /   </span><br><span class="line"><span class="function"><span class="title">DefaultNode</span><span class="params">(nodeA)</span></span></span><br></pre></td></tr></table></figure>
-<p>注意：每个 <code>DefaultNode</code> 由资源 ID 和输入名称来标识。换句话说，一个资源 ID 可以有多个不同入口的 DefaultNode。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ContextUtil.enter(<span class="string">&quot;entrance1&quot;</span>, <span class="string">&quot;appA&quot;</span>);</span><br><span class="line">Entry nodeA = SphU.entry(<span class="string">&quot;nodeA&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (nodeA != <span class="keyword">null</span>) &#123;</span><br><span class="line">  nodeA.exit();</span><br><span class="line">&#125;</span><br><span class="line">ContextUtil.exit();</span><br><span class="line"></span><br><span class="line">ContextUtil.enter(<span class="string">&quot;entrance2&quot;</span>, <span class="string">&quot;appA&quot;</span>);</span><br><span class="line">nodeA = SphU.entry(<span class="string">&quot;nodeA&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (nodeA != <span class="keyword">null</span>) &#123;</span><br><span class="line">  nodeA.exit();</span><br><span class="line">&#125;</span><br><span class="line">ContextUtil.exit();</span><br></pre></td></tr></table></figure>
-<p>以上代码将在内存中生成以下结构：</p>
-<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">            machine-root</span><br><span class="line">            /         <span class="string">\</span></span><br><span class="line">           /           <span class="string">\</span></span><br><span class="line">   EntranceNode1   EntranceNode2</span><br><span class="line">         /               <span class="string">\</span></span><br><span class="line">        /                 <span class="string">\</span></span><br><span class="line">DefaultNode(nodeA)   DefaultNode(nodeA)</span><br></pre></td></tr></table></figure>
-<p>上面的结构可以通过调用 <code>curl http://localhost:8719/tree?type=root</code> 来显示：</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">EntranceNode:</span> machine-root(<span class="attr">t:</span><span class="number">0</span> <span class="attr">pq:</span><span class="number">1</span> <span class="attr">bq:</span><span class="number">0</span> <span class="attr">tq:</span><span class="number">1</span> <span class="attr">rt:</span><span class="number">0</span> <span class="attr">prq:</span><span class="number">1</span> <span class="number">1</span><span class="attr">mp:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mb:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mt:</span><span class="number">0</span>)</span><br><span class="line">-<span class="attr">EntranceNode1:</span> Entrance1(<span class="attr">t:</span><span class="number">0</span> <span class="attr">pq:</span><span class="number">1</span> <span class="attr">bq:</span><span class="number">0</span> <span class="attr">tq:</span><span class="number">1</span> <span class="attr">rt:</span><span class="number">0</span> <span class="attr">prq:</span><span class="number">1</span> <span class="number">1</span><span class="attr">mp:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mb:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mt:</span><span class="number">0</span>)</span><br><span class="line">--nodeA(<span class="attr">t:</span><span class="number">0</span> <span class="attr">pq:</span><span class="number">1</span> <span class="attr">bq:</span><span class="number">0</span> <span class="attr">tq:</span><span class="number">1</span> <span class="attr">rt:</span><span class="number">0</span> <span class="attr">prq:</span><span class="number">1</span> <span class="number">1</span><span class="attr">mp:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mb:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mt:</span><span class="number">0</span>)</span><br><span class="line">-<span class="attr">EntranceNode2:</span> Entrance1(<span class="attr">t:</span><span class="number">0</span> <span class="attr">pq:</span><span class="number">1</span> <span class="attr">bq:</span><span class="number">0</span> <span class="attr">tq:</span><span class="number">1</span> <span class="attr">rt:</span><span class="number">0</span> <span class="attr">prq:</span><span class="number">1</span> <span class="number">1</span><span class="attr">mp:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mb:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mt:</span><span class="number">0</span>)</span><br><span class="line">--nodeA(<span class="attr">t:</span><span class="number">0</span> <span class="attr">pq:</span><span class="number">1</span> <span class="attr">bq:</span><span class="number">0</span> <span class="attr">tq:</span><span class="number">1</span> <span class="attr">rt:</span><span class="number">0</span> <span class="attr">prq:</span><span class="number">1</span> <span class="number">1</span><span class="attr">mp:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mb:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mt:</span><span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="attr">t:</span>threadNum  <span class="attr">pq:</span>passQps  <span class="attr">bq:</span>blockedQps  <span class="attr">tq:</span>totalQps  <span class="attr">rt:</span>averageRt  <span class="attr">prq:</span> passRequestQps <span class="number">1</span><span class="attr">mp:</span><span class="number">1</span>m-passed <span class="number">1</span><span class="attr">mb:</span><span class="number">1</span>m-blocked <span class="number">1</span><span class="attr">mt:</span><span class="number">1</span>m-total</span><br></pre></td></tr></table></figure>
-<h2 id="ClusterBuilderSlot"><a href="#ClusterBuilderSlot" class="headerlink" title="ClusterBuilderSlot"></a>ClusterBuilderSlot</h2><p>此插槽用于构建资源的 <code>ClusterNode</code> 以及调用来源节点。<code>ClusterNode</code> 保持资源运行统计信息（响应时间、QPS、block 数目、线程数、异常数等）以及原始调用者统计信息列表。来源调用者的名字由 <code>ContextUtil.enter(contextName，origin)</code> 中的 <code>origin</code> 标记。可通过如下命令查看某个资源不同调用者的访问情况：<code>curl http://localhost:8719/origin?id=caller</code>：</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">id</span>: nodeA</span><br><span class="line"><span class="attribute">idx</span> origin  threadNum passedQps blockedQps totalQps aRt   <span class="number">1</span>m-passed <span class="number">1</span>m-blocked <span class="number">1</span>m-total </span><br><span class="line"><span class="attribute">1</span>   caller<span class="number">1</span> <span class="number">0</span>         <span class="number">0</span>         <span class="number">0</span>          <span class="number">0</span>        <span class="number">0</span>     <span class="number">0</span>         <span class="number">0</span>          <span class="number">0</span>        </span><br><span class="line"><span class="attribute">2</span>   caller<span class="number">2</span> <span class="number">0</span>         <span class="number">0</span>         <span class="number">0</span>          <span class="number">0</span>        <span class="number">0</span>     <span class="number">0</span>         <span class="number">0</span>          <span class="number">0</span>        </span><br></pre></td></tr></table></figure>
-<h2 id="StatisticSlot"><a href="#StatisticSlot" class="headerlink" title="StatisticSlot"></a>StatisticSlot</h2><p><code>StatisticSlot</code> 是 Sentinel 的核心功能插槽之一，用于统计实时的调用数据。</p>
-<ul>
-<li><code>clusterNode</code>：资源唯一标识的 ClusterNode 的 runtime 统计</li>
-<li><code>origin</code>：根据来自不同调用者的统计信息</li>
-<li><code>defaultnode</code>: 根据上下文条目名称和资源 ID 的 runtime 统计</li>
-<li>入口的统计</li>
-</ul>
-<p>Sentinel 底层采用高性能的滑动窗口数据结构 <code>LeapArray</code> 来统计实时的秒级指标数据，可以很好地支撑写多于读的高并发场景。</p>
-<p><img src="https://user-images.githubusercontent.com/9434884/51955215-0af7c500-247e-11e9-8895-9fc0e4c10c8c.png" alt="sliding-window-leap-array"></p>
-<h2 id="FlowSlot"><a href="#FlowSlot" class="headerlink" title="FlowSlot"></a>FlowSlot</h2><p>这个 slot 主要根据预设的资源的统计信息，按照固定的次序，依次生效。如果一个资源对应两条或者多条流控规则，则会根据如下次序依次检验，直到全部通过或者有一个规则生效为止:</p>
-<ul>
-<li>指定应用生效的规则，即针对调用方限流的；</li>
-<li>调用方为 other 的规则；</li>
-<li>调用方为 default 的规则。</li>
-</ul>
-<h2 id="DegradeSlot"><a href="#DegradeSlot" class="headerlink" title="DegradeSlot"></a>DegradeSlot</h2><p>这个 slot 主要针对资源的平均响应时间（RT）以及异常比率，来决定资源是否在接下来的时间被自动熔断掉。</p>
-<h2 id="SystemSlot"><a href="#SystemSlot" class="headerlink" title="SystemSlot"></a>SystemSlot</h2><p>这个 slot 会根据对于当前系统的整体情况，对入口资源的调用进行动态调配。其原理是让入口的流量和当前系统的预计容量达到一个动态平衡。</p>
-<p>注意系统规则只对入口流量起作用（调用类型为 <code>EntryType.IN</code>），对出口流量无效。可通过 <code>SphU.entry(res, entryType)</code> 指定调用类型，如果不指定，默认是<code>EntryType.OUT</code>。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://taojishu.github.io/2021/08/13/%E3%80%90Git%E3%80%91%E5%BC%80%E5%8F%91%E5%B0%8F%E6%8A%80%E5%B7%A7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -413,6 +244,190 @@
             </div>
           <!--/noindex-->
         
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://taojishu.github.io/2021/08/13/%E3%80%90Sentinel%E3%80%91%E2%91%A0%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://taojishu.oss-cn-beijing.aliyuncs.com/md/%E5%A4%B4%E5%83%8F.png">
+      <meta itemprop="name" content="doimyakon">
+      <meta itemprop="description" content="愿我的余生与代码相伴！">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TaoJiShu">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/08/13/%E3%80%90Sentinel%E3%80%91%E2%91%A0%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">【Sentinel】①介绍与基本原理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-13 22:01:03" itemprop="dateCreated datePublished" datetime="2021-08-13T22:01:03+08:00">2021-08-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-14 23:39:06" itemprop="dateModified" datetime="2021-08-14T23:39:06+08:00">2021-08-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Git/" itemprop="url" rel="index"><span itemprop="name">Git</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/08/13/%E3%80%90Sentinel%E3%80%91%E2%91%A0%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" class="post-meta-item leancloud_visitors" data-flag-title="【Sentinel】①介绍与基本原理" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/08/13/%E3%80%90Sentinel%E3%80%91%E2%91%A0%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/13/%E3%80%90Sentinel%E3%80%91%E2%91%A0%E4%BB%8B%E7%BB%8D%E4%B8%8E%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><blockquote>
+<p>Sentinel 是面向分布式服务架构的流量控制组件，主要以流量为切入点，从流量控制、熔断降级、系统自适应保护等多个维度来帮助您保障微服务的稳定性。</p>
+</blockquote>
+<h2 id="Sentinel-的历史"><a href="#Sentinel-的历史" class="headerlink" title="Sentinel 的历史"></a>Sentinel 的历史</h2><ul>
+<li>2012 年，Sentinel 诞生，主要功能为入口流量控制。</li>
+<li>2013-2017 年，Sentinel积累了大量的流量归整场景以及生产实践。</li>
+<li>2018 年，Sentinel 开源，并持续演进。</li>
+<li>2019 年，Sentinel 朝着多语言扩展的方向不断探索，推出 <a target="_blank" rel="noopener" href="https://github.com/alibaba/sentinel-cpp">C++ 原生版本</a>，同时针对 Service Mesh 场景也推出了 <a target="_blank" rel="noopener" href="https://github.com/alibaba/Sentinel/tree/master/sentinel-cluster/sentinel-cluster-server-envoy-rls">Envoy 集群流量控制支持</a>，以解决 Service Mesh 架构下多语言限流的问题。</li>
+<li>2020 年，推出 <a target="_blank" rel="noopener" href="https://github.com/alibaba/sentinel-golang">Sentinel Go 版本</a>，继续朝着云原生方向演进。</li>
+</ul>
+<h2 id="Sentinel基础概念"><a href="#Sentinel基础概念" class="headerlink" title="Sentinel基础概念"></a>Sentinel基础概念</h2><h3 id="资源"><a href="#资源" class="headerlink" title="资源"></a>资源</h3><p>应用服务的提供者或者消费者，甚至可以是一块代码块。</p>
+<p>通过Sentinel API定义的代码，就是资源，可以使用方法签名，URL，甚至服务名称作为资源名来标示资源。</p>
+<h3 id="规则"><a href="#规则" class="headerlink" title="规则"></a>规则</h3><p>围绕着资源，设置针对流量控制、熔断降级规则，可以实现动态更新规则。（动态实现模式：原始模式、PULL模式、PUSH模式）</p>
+<h2 id="Sentinel-功能和设计理念"><a href="#Sentinel-功能和设计理念" class="headerlink" title="Sentinel 功能和设计理念"></a>Sentinel 功能和设计理念</h2><h3 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h3><p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdsentinel-flow-overview.jpg" alt="sentinel-flow-overview"></p>
+<p>流量即网络访问中的请求，通过流量控制，可以实现对资源的控制，保护资源的可用性。</p>
+<p>一般通过以下角度：</p>
+<ul>
+<li>资源的调用关系，例如资源的调用链路，资源和资源之间的关系；</li>
+<li>运行指标，例如 QPS、线程池、系统负载等；</li>
+<li>控制的效果，例如直接限流、冷启动、排队等。</li>
+</ul>
+<h3 id="熔断降级"><a href="#熔断降级" class="headerlink" title="熔断降级"></a>熔断降级</h3><p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/md62410811-cd871680-b61d-11e9-9df7-3ee41c618644.png" alt="image"></p>
+<p>熔断降级即降低不稳定资源调用，保护资源的可用性，避免影响其他资源，防止产生雪崩的情况。</p>
+<blockquote>
+<p>Hytrix区别：</p>
+<ul>
+<li>Hytrix通过线程池来对资源进行隔离。增加线程切换成本（上下文），还需要预先分配线程池大小。</li>
+<li>Sentine通过两点针对<ul>
+<li>通过并发线程数进行限制</li>
+<li>通过响应时间对资源进行降级</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<h3 id="系统负载保护"><a href="#系统负载保护" class="headerlink" title="系统负载保护"></a>系统负载保护</h3><p>如果一个集群环境下的两台机器，本应将请求打到第一台机器时候，由于机器的使用情况，网络负载将请求打到第二台机器，可是如果第二台机器也到了临界值，此时很容易产生系统崩溃。</p>
+<p>为了解决这个问题，Sentinel 提供了对应的保护机制，让系统的入口流量和系统的负载达到一个平衡，保证系统在能力范围之内处理最多的请求。</p>
+<h2 id="Sentinel-是如何工作的"><a href="#Sentinel-是如何工作的" class="headerlink" title="Sentinel 是如何工作的"></a>Sentinel 是如何工作的</h2><p>Sentinel 的主要工作机制如下：</p>
+<ul>
+<li>对主流框架提供适配或者显示的 API，来定义需要保护的资源，并提供设施对资源进行实时统计和调用链路分析。</li>
+<li>根据预设的规则，结合对资源的实时统计信息，对流量进行控制。同时，Sentinel 提供开放的接口，方便您定义及改变规则。</li>
+<li>Sentinel 提供实时的监控系统，方便您快速了解目前系统的状态。</li>
+</ul>
+<h1 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><h3 id="资源-1"><a href="#资源-1" class="headerlink" title="资源"></a>资源</h3><ul>
+<li>资源名称</li>
+<li>entry</li>
+</ul>
+<h3 id="entry"><a href="#entry" class="headerlink" title="entry"></a>entry</h3><ul>
+<li><code>NodeSelectorSlot</code> 负责收集资源的路径，并将这些资源的调用路径，以树状结构存储起来，用于根据调用路径来限流降级；</li>
+<li><code>ClusterBuilderSlot</code> 则用于存储资源的统计信息以及调用者信息，例如该资源的 RT, QPS, thread count 等等，这些信息将用作为多维度限流，降级的依据；</li>
+<li><code>StatisticSlot</code> 则用于记录、统计不同纬度的 runtime 指标监控信息；</li>
+<li><code>FlowSlot</code> 则用于根据预设的限流规则以及前面 slot 统计的状态，来进行流量控制；</li>
+<li><code>AuthoritySlot</code> 则根据配置的黑白名单和调用来源信息，来做黑白名单控制；</li>
+<li><code>DegradeSlot</code> 则通过统计信息以及预设的规则，来做熔断降级；</li>
+<li><code>SystemSlot</code> 则通过系统的状态，例如 load1 等，来控制总的入口流量；</li>
+</ul>
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/mdsentinel-slot-chain-architecture.png" alt="sentinel-slot-chain-architecture"></p>
+<p>Sentinel 将 <code>ProcessorSlot</code> 作为 SPI 接口进行扩展（1.7.2 版本以前 <code>SlotChainBuilder</code> 作为 SPI），使得 Slot Chain 具备了扩展的能力。您可以自行加入自定义的 slot 并编排 slot 间的顺序，从而可以给 Sentinel 添加自定义的功能。</p>
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/md46783631-93324d00-cd5d-11e8-8ad1-a802bcc8f9c9.png" alt="Slot Chain SPI"></p>
+<p>下面介绍一下各个 slot 的功能。</p>
+<h2 id="NodeSelectorSlot"><a href="#NodeSelectorSlot" class="headerlink" title="NodeSelectorSlot"></a>NodeSelectorSlot</h2><p>这个 slot 主要负责收集资源的路径，并将这些资源的调用路径，以树状结构存储起来，用于根据调用路径来限流降级。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ContextUtil.enter(<span class="string">&quot;entrance1&quot;</span>, <span class="string">&quot;appA&quot;</span>);</span><br><span class="line">Entry nodeA = SphU.entry(<span class="string">&quot;nodeA&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (nodeA != <span class="keyword">null</span>) &#123;</span><br><span class="line">   nodeA.exit();</span><br><span class="line">&#125;</span><br><span class="line">ContextUtil.exit();</span><br></pre></td></tr></table></figure>
+<p>上述代码通过 <code>ContextUtil.enter()</code> 创建了一个名为 <code>entrance1</code> 的上下文，同时指定调用发起者为 <code>appA</code>；接着通过 <code>SphU.entry()</code>请求一个 token，如果该方法顺利执行没有抛 <code>BlockException</code>，表明 token 请求成功。</p>
+<p>以上代码将在内存中生成以下结构：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> machine-root</span><br><span class="line">           /     </span><br><span class="line">          /</span><br><span class="line">   EntranceNode1</span><br><span class="line">        /</span><br><span class="line">       /   </span><br><span class="line"><span class="function"><span class="title">DefaultNode</span><span class="params">(nodeA)</span></span></span><br></pre></td></tr></table></figure>
+<p>注意：每个 <code>DefaultNode</code> 由资源 ID 和输入名称来标识。换句话说，一个资源 ID 可以有多个不同入口的 DefaultNode。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">ContextUtil.enter(<span class="string">&quot;entrance1&quot;</span>, <span class="string">&quot;appA&quot;</span>);</span><br><span class="line">Entry nodeA = SphU.entry(<span class="string">&quot;nodeA&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (nodeA != <span class="keyword">null</span>) &#123;</span><br><span class="line">  nodeA.exit();</span><br><span class="line">&#125;</span><br><span class="line">ContextUtil.exit();</span><br><span class="line"></span><br><span class="line">ContextUtil.enter(<span class="string">&quot;entrance2&quot;</span>, <span class="string">&quot;appA&quot;</span>);</span><br><span class="line">nodeA = SphU.entry(<span class="string">&quot;nodeA&quot;</span>);</span><br><span class="line"><span class="keyword">if</span> (nodeA != <span class="keyword">null</span>) &#123;</span><br><span class="line">  nodeA.exit();</span><br><span class="line">&#125;</span><br><span class="line">ContextUtil.exit();</span><br></pre></td></tr></table></figure>
+<p>以上代码将在内存中生成以下结构：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">            machine-root</span><br><span class="line">            /         <span class="string">\</span></span><br><span class="line">           /           <span class="string">\</span></span><br><span class="line">   EntranceNode1   EntranceNode2</span><br><span class="line">         /               <span class="string">\</span></span><br><span class="line">        /                 <span class="string">\</span></span><br><span class="line">DefaultNode(nodeA)   DefaultNode(nodeA)</span><br></pre></td></tr></table></figure>
+<p>上面的结构可以通过调用 <code>curl http://localhost:8719/tree?type=root</code> 来显示：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">EntranceNode:</span> machine-root(<span class="attr">t:</span><span class="number">0</span> <span class="attr">pq:</span><span class="number">1</span> <span class="attr">bq:</span><span class="number">0</span> <span class="attr">tq:</span><span class="number">1</span> <span class="attr">rt:</span><span class="number">0</span> <span class="attr">prq:</span><span class="number">1</span> <span class="number">1</span><span class="attr">mp:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mb:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mt:</span><span class="number">0</span>)</span><br><span class="line">-<span class="attr">EntranceNode1:</span> Entrance1(<span class="attr">t:</span><span class="number">0</span> <span class="attr">pq:</span><span class="number">1</span> <span class="attr">bq:</span><span class="number">0</span> <span class="attr">tq:</span><span class="number">1</span> <span class="attr">rt:</span><span class="number">0</span> <span class="attr">prq:</span><span class="number">1</span> <span class="number">1</span><span class="attr">mp:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mb:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mt:</span><span class="number">0</span>)</span><br><span class="line">--nodeA(<span class="attr">t:</span><span class="number">0</span> <span class="attr">pq:</span><span class="number">1</span> <span class="attr">bq:</span><span class="number">0</span> <span class="attr">tq:</span><span class="number">1</span> <span class="attr">rt:</span><span class="number">0</span> <span class="attr">prq:</span><span class="number">1</span> <span class="number">1</span><span class="attr">mp:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mb:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mt:</span><span class="number">0</span>)</span><br><span class="line">-<span class="attr">EntranceNode2:</span> Entrance1(<span class="attr">t:</span><span class="number">0</span> <span class="attr">pq:</span><span class="number">1</span> <span class="attr">bq:</span><span class="number">0</span> <span class="attr">tq:</span><span class="number">1</span> <span class="attr">rt:</span><span class="number">0</span> <span class="attr">prq:</span><span class="number">1</span> <span class="number">1</span><span class="attr">mp:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mb:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mt:</span><span class="number">0</span>)</span><br><span class="line">--nodeA(<span class="attr">t:</span><span class="number">0</span> <span class="attr">pq:</span><span class="number">1</span> <span class="attr">bq:</span><span class="number">0</span> <span class="attr">tq:</span><span class="number">1</span> <span class="attr">rt:</span><span class="number">0</span> <span class="attr">prq:</span><span class="number">1</span> <span class="number">1</span><span class="attr">mp:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mb:</span><span class="number">0</span> <span class="number">1</span><span class="attr">mt:</span><span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="attr">t:</span>threadNum  <span class="attr">pq:</span>passQps  <span class="attr">bq:</span>blockedQps  <span class="attr">tq:</span>totalQps  <span class="attr">rt:</span>averageRt  <span class="attr">prq:</span> passRequestQps <span class="number">1</span><span class="attr">mp:</span><span class="number">1</span>m-passed <span class="number">1</span><span class="attr">mb:</span><span class="number">1</span>m-blocked <span class="number">1</span><span class="attr">mt:</span><span class="number">1</span>m-total</span><br></pre></td></tr></table></figure>
+<h2 id="ClusterBuilderSlot"><a href="#ClusterBuilderSlot" class="headerlink" title="ClusterBuilderSlot"></a>ClusterBuilderSlot</h2><p>此插槽用于构建资源的 <code>ClusterNode</code> 以及调用来源节点。<code>ClusterNode</code> 保持资源运行统计信息（响应时间、QPS、block 数目、线程数、异常数等）以及原始调用者统计信息列表。来源调用者的名字由 <code>ContextUtil.enter(contextName，origin)</code> 中的 <code>origin</code> 标记。可通过如下命令查看某个资源不同调用者的访问情况：<code>curl http://localhost:8719/origin?id=caller</code>：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">id</span>: nodeA</span><br><span class="line"><span class="attribute">idx</span> origin  threadNum passedQps blockedQps totalQps aRt   <span class="number">1</span>m-passed <span class="number">1</span>m-blocked <span class="number">1</span>m-total </span><br><span class="line"><span class="attribute">1</span>   caller<span class="number">1</span> <span class="number">0</span>         <span class="number">0</span>         <span class="number">0</span>          <span class="number">0</span>        <span class="number">0</span>     <span class="number">0</span>         <span class="number">0</span>          <span class="number">0</span>        </span><br><span class="line"><span class="attribute">2</span>   caller<span class="number">2</span> <span class="number">0</span>         <span class="number">0</span>         <span class="number">0</span>          <span class="number">0</span>        <span class="number">0</span>     <span class="number">0</span>         <span class="number">0</span>          <span class="number">0</span>        </span><br></pre></td></tr></table></figure>
+<h2 id="StatisticSlot"><a href="#StatisticSlot" class="headerlink" title="StatisticSlot"></a>StatisticSlot</h2><p><code>StatisticSlot</code> 是 Sentinel 的核心功能插槽之一，用于统计实时的调用数据。</p>
+<ul>
+<li><code>clusterNode</code>：资源唯一标识的 ClusterNode 的 runtime 统计</li>
+<li><code>origin</code>：根据来自不同调用者的统计信息</li>
+<li><code>defaultnode</code>: 根据上下文条目名称和资源 ID 的 runtime 统计</li>
+<li>入口的统计</li>
+</ul>
+<p>Sentinel 底层采用高性能的滑动窗口数据结构 <code>LeapArray</code> 来统计实时的秒级指标数据，可以很好地支撑写多于读的高并发场景。</p>
+<p><img src="https://taojishu.oss-cn-beijing.aliyuncs.com/md51955215-0af7c500-247e-11e9-8895-9fc0e4c10c8c.png" alt="sliding-window-leap-array"></p>
+<h2 id="FlowSlot"><a href="#FlowSlot" class="headerlink" title="FlowSlot"></a>FlowSlot</h2><p>这个 slot 主要根据预设的资源的统计信息，按照固定的次序，依次生效。如果一个资源对应两条或者多条流控规则，则会根据如下次序依次检验，直到全部通过或者有一个规则生效为止:</p>
+<ul>
+<li>指定应用生效的规则，即针对调用方限流的；</li>
+<li>调用方为 other 的规则；</li>
+<li>调用方为 default 的规则。</li>
+</ul>
+<h2 id="DegradeSlot"><a href="#DegradeSlot" class="headerlink" title="DegradeSlot"></a>DegradeSlot</h2><p>这个 slot 主要针对资源的平均响应时间（RT）以及异常比率，来决定资源是否在接下来的时间被自动熔断掉。</p>
+<h2 id="SystemSlot"><a href="#SystemSlot" class="headerlink" title="SystemSlot"></a>SystemSlot</h2><p>这个 slot 会根据对于当前系统的整体情况，对入口资源的调用进行动态调配。其原理是让入口的流量和当前系统的预计容量达到一个动态平衡。</p>
+<p>注意系统规则只对入口流量起作用（调用类型为 <code>EntryType.IN</code>），对出口流量无效。可通过 <code>SphU.entry(res, entryType)</code> 指定调用类型，如果不指定，默认是<code>EntryType.OUT</code>。</p>
+
       
     </div>
 
@@ -971,7 +986,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/01/28/%E3%80%90Hexo%E3%80%91%E2%91%A0%E5%A6%82%E4%BD%95%E4%BF%AE%E6%94%B9Hexo%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98/" class="post-title-link" itemprop="url">【Hexo】如何修改Hexo博客主题</a>
+            <a href="/2021/01/28/%E3%80%90Hexo%E3%80%91%E2%91%A0%E5%A6%82%E4%BD%95%E4%BF%AE%E6%94%B9Hexo%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98/" class="post-title-link" itemprop="url">【Hexo】①如何修改Hexo博客主题</a>
         </h2>
 
         <div class="post-meta">
@@ -988,7 +1003,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-04-06 22:45:06" itemprop="dateModified" datetime="2021-04-06T22:45:06+08:00">2021-04-06</time>
+                <time title="修改时间：2021-08-14 23:37:05" itemprop="dateModified" datetime="2021-08-14T23:37:05+08:00">2021-08-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1001,7 +1016,7 @@
             </span>
 
           
-            <span id="/2021/01/28/%E3%80%90Hexo%E3%80%91%E2%91%A0%E5%A6%82%E4%BD%95%E4%BF%AE%E6%94%B9Hexo%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98/" class="post-meta-item leancloud_visitors" data-flag-title="【Hexo】如何修改Hexo博客主题" title="阅读次数">
+            <span id="/2021/01/28/%E3%80%90Hexo%E3%80%91%E2%91%A0%E5%A6%82%E4%BD%95%E4%BF%AE%E6%94%B9Hexo%E5%8D%9A%E5%AE%A2%E4%B8%BB%E9%A2%98/" class="post-meta-item leancloud_visitors" data-flag-title="【Hexo】①如何修改Hexo博客主题" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
